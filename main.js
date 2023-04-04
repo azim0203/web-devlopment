@@ -4,5 +4,9 @@ function addvalue(e){
     e.preventDefault();
     let name=document.getElementById('name').value;
     let email=document.getElementById('email').value;
-    localStorage.setItem(name,email);
+    const obj={
+        name,
+        email
+    }
+    localStorage.setItem('userdetails',JSON.stringify(obj));
 }
