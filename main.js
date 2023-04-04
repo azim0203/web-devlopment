@@ -8,5 +8,8 @@ function addvalue(e){
         name,
         email
     }
-    localStorage.setItem('userdetails',JSON.stringify(obj));
+    //localStorage.setItem('userdetails',JSON.stringify(obj));
+    let users=JSON.parse(localStorage.getItem('users'))||[];
+    users.push(obj);
+    localStorage.setItem('users',JSON.stringify(users));
 }
