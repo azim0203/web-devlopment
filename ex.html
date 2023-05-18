@@ -1,0 +1,47 @@
+<table id="expense-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expense-row">
+        <td>Food</td>
+        <td>$10</td>
+        <td>Lunch</td>
+      </tr>
+      <tr class="expense-row">
+        <td>Transportation</td>
+        <td>$5</td>
+        <td>Gas</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+  function addExpense() {
+    var category = document.getElementById("category").value;
+    var amount = document.getElementById("amount").value;
+    var description = document.getElementById("description").value;
+  
+    var row = document.createElement("tr");
+    row.className = "expense-row";
+  
+    var cell1 = document.createElement("td");
+    cell1.textContent = category;
+    row.appendChild(cell1);
+  
+    var cell2 = document.createElement("td");
+    cell2.textContent = amount;
+    row.appendChild(cell2);
+  
+    var cell3 = document.createElement("td");
+    cell3.textContent = description;
+    row.appendChild(cell3);
+  
+    document.getElementById("expense-table").appendChild(row);
+  }
+  </script>
+  

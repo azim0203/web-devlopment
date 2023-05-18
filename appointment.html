@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointment App</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>Appointment App</h1>
+
+  <h2>Add/Edit Appointment</h2>
+  <form id="appointmentForm">
+    <input type="hidden" id="appointmentId">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required><br>
+    <label for="number">Number:</label>
+    <input type="tel" id="number" required><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" required><br>
+    <button type="submit">Save</button>
+  </form>
+
+  <h2>Appointments</h2>
+  <ul id="appointmentList"></ul>
+
+<script src="new.js"></script>
+</body>
+</html>
+
+

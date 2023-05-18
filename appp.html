@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointment App</title>
+</head>
+<body>
+  <h1>Appointment App</h1>
+
+  <h2>Add/Edit Appointment</h2>
+  <form id="appointmentForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required><br>
+    <label for="number">Number:</label>
+    <input type="tel" id="number" required><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" required><br>
+    <button type="submit">Save</button>
+  </form>
+
+  <h2>Appointments</h2>
+  <ul id="appointmentList"></ul>
+
+  <script>
+    // Function to fetch and display appointments
+    function getAppointments() {
+      axios.get('https://crudcrud.com/api/02df6930a7bc4c2198ab4f623f219049/appointment')
+        .then(response => {
+          const appointments = response.data;
+          const appointmentList = document.getElementById('appointmentList');
+          appointmentList.innerHTML = '';
+
+          appointments.forEach(appointment => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `${appointment.name}, ${appointment.number}, ${appointment.email}`;
+            listItem.addEventListener('click', () => editAppointment(appointment));
+            appointmentList.appendChild(listItem);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching appointments:', error);
+        });
+    }
+
+    // Function to add or update an appointment
+    function saveAppointment(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const number = document.getElementById('number').value;
+      const email = document.getElementById('email').value;
+
+      const appointment = {
+        name,
+        number,
+        email
+      };
+
+      axios.post('https://crudcrud.com/api/02df6930a7bc4c2198ab4f623f219049/appointment', appointment)
+        .then(response => {
+          console.log('Appointment added:', response.data);
+          getAppointments();
+          document.getElementById('appointmentForm').reset();
+        })
+        .catch(error => {
+          console.error('Error adding appointment:', error);
+        });
+    }
+
+    // Function to populate form with appointment details for editing
+    function editAppointment(appointment) {
+      document.getElementById('appointmentId').value = appointment._id;
+      document.getElementById('name').value = appointment.name;
+      document.getElementById('number').value = appointment.number;
+      document.getElementById('email').value = appointment.email;
+    }
+
+    // Function to delete an appointment
+    function deleteAppointment(appointmentId) {
+      axios.delete(`https://crudcrud.com/api/02df6930a7bc4c2198ab4f623f219049/appointment/${appointmentId}`)
+        .then(response => {
+          console.log('Appointment deleted:', response.data);
+          getAppointments();
+        })
+        .catch(error => {
+          console.error('Error deleting appointment:', error);
+        });
+    }
+
+    // Add event listener to the form submit event
+    document.getElementById('appointmentForm').addEventListener('submit', saveAppointment);
+
+    // Fetch and display initial appointments
+    getAppointments();
+  </script>
+</body>
+</html>
