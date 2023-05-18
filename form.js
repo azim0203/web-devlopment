@@ -20,4 +20,8 @@ nameLabel.addEventListener('mouseover', function() {
 
 nameLabel.addEventListener('mouseout', function() {
     console.log('Mouse out of name field!');
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> origin/main
