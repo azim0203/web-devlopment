@@ -1,182 +1,117 @@
-function getAppointments(){
-  const appoitnmentList =document.getElementById('appointmentList');
-  appoitnmentList.innerHTML='';
-  axios.get('https://crudcrud.com/api/bc1271a166654f7a97fa726dafda8d40/appointment')
-  .then(res => {
-    const appointments= res.data;
-    appointments.forEach(element => {
-      const ListItem=document.createElement('li');
+const candyForm =document.getElementById('candyform');
+const candyList =document.getElementById('candylist');
+const apiURL = 'https://crudcrud.com/api/f51a79d126ff494ba896d013ac576427/candy';
+let candies = [];
 
-      const name =document.createElement('span');
-      name.innerText=`Name: ${element.name}`;
-      ListItem.appendChild(name);
-
-      const number =document.createElement('span');
-      number.innerText=`Number: ${element.number}`;
-      ListItem.appendChild(number);
-
-      const email =document.createElement('span');
-      name.innerText=`Email: ${element.name}`;
-      ListItem.appendChild(name);
-
-      const editButton= createButton('Edit',()=>editAppointment(element));
-      const deleteButton= createButton('Delete',()=>deleteAppointment(element._id))
-
-      ListItem.appendChild(editButton);
-      ListItem.appendChild(deleteButton);
-      appoitnmentList.appendChild(ListItem);
-
-
-
-    });
+function fetchCandies(){
+  axios.get(apiURL)
+  .then(
+    function(response){
+      candies =response.data;
+      renderCandies();
+    }
+  )
+  .catch(err => {
+    console.error(err); 
+  })
+}
+function renderCandies(){
+  candyList.innerHTML ='';
+  candies.forEach(
+    function(candy){
+      const row =document.createElement('tr');
+      row.innerHTML=`
+      <td>${candy.name}</td>
+      <td>${candy.description}</td>
+      <td>${candy.price}</td>
+      <td>${candy.quantity}</td>
+      <td>
+      <button class="btn btn-success btn-sm" onclick="buyOne('${candy._id}')">Buy One</button>
+      <button class="btn btn-success btn-sm" onclick="buytwo('${candy._id}')">Buy Two</button>
+      <button class="btn btn-success btn-sm" onclick="buythree('${candy._id}')">Buy Three</button>
+      <button class="btn btn-danger btn-sm" onclick="removeCandy('${candy._id}')">Remove</button>
+      </td>
+      `
+      candyList.appendChild(row);
+    }
+  )
+}
+function addCandy(candy){
+  axios.post(`${apiURL}`,candy)
+  .then(
+    function(){
+    fetchCandies();
   })
   .catch(err => {
     console.error(err); 
   })
+}
+function buyOne(candyId){
+  const candy=candies.find(candy=> candy => candy._id===candyId);
+  if(candy && candy.quantity>=1){
+    candy.quantity--;
+    axios.put(`${apiURL}/${candy._id}`,candy)
+    .then(function(){
+      fetchCandies();
+    })
+    .catch(err => {
+      console.error(err); 
+    })
+  }
+}
+function buytwo(candyId){
+  const candy=candies.find(candy=> candy => candy._id===candyId);
+  if(candy && candy.quantity>=2){
+    candy.quantity-=2;
+    axios.put(`${apiURL}/${candy._id}`,candy)
+    .then(function(){
+      fetchCandies();
+    })
+    .catch(err => {
+      console.error(err); 
+    })
+  }
+}
+function buythree(candyId){
+  const candy=candies.find(candy=> candy => candy._id===candyId);
+  if(candy && candy.quantity>=3){
+    candy.quantity-=3;
+    axios.put(`${apiURL}/${candy._id}`,candy)
+    .then(function(){
+      fetchCandies();
+    })
+    .catch(err => {
+      console.error(err); 
+    })
+  }
+}
+
+
+candyForm.addEventListener('submit',
+function(event){
+  event.preventDefault();
+  const candyName=document.getElementById('candyName').value;
+  const candyDescription=document.getElementById('candyDescription').value;
+  const candyPrice=document.getElementById('candyprice').value;
+  const candyQuantity=document.getElementById('candyQantity').value;
+  
+  const newCandy={
+    name:candyName,
+    description:candyDescription,
+    price:candyPrice,
+    quantity:candyQuantity
+  };
+  addCandy(newCandy);
+  candyForm.reset();
   
 }
-
-function createButton(text, onClick){
-  const button= document.createElement('button');
-  button.textContent=text;
-  button.addEventListener('click',onClick);
-  return button;
-}
-
-
-
-
-function saveAppointment(event){
-  event.preventDefault();
-
-  const appointmentId = document.getElementById('appointmentId').value;
-  const name = document.getElementById('name').value;
-  const number = document.getElementById('number').value;
-  const email= document.getElementById('email').value;
-
-  const appointment={
-    name: name,
-    number : number,
-    email : email
-  };
-
-  const url =appointmentId?
-  `https://crudcrud.com/api/bc1271a166654f7a97fa726dafda8d40/appointment/${appointmentId}` :
-  'https://crudcrud.com/api/bc1271a166654f7a97fa726dafda8d40/appointment';
-
-  const request = appointmentId?
-  axios.put(url,appointment):
-  axios.post(url, appointment);
-
-  request.then(Response=>{
-    getAppointments();
-    document.getElementById('appointmentForm').reset();
-
-  }
-
-  ).catch(error=>{
-    console.error(error);
-  })
-
-
-}
-
-function editAppointment(appointment){
- document.getElementById('appointmentId').value = appointment._id;
- document.getElementById('name').value = appointment.name;
- document.getElementById('number').value = appointment.number;
- document.getElementById('email').value = appointment.email;
-}
-
-function deleteAppointment(appointmentId){
-  axios.delete(`https://crudcrud.com/api/bc1271a166654f7a97fa726dafda8d40/appointment/${appointmentId}`)
-  .then(res => {
-    console.log(res)
-    getAppointments();
-  })
+);
+function removeCandy(candyId){
+  axios.delete(`${apiURL}/${candyId}`)
+  .then(function() {fetchCandies()})
   .catch(err => {
     console.error(err); 
   })
 }
- document.getElementById('appointmentForm').addEventListener('submit',saveAppointment)
 
-
-
-
-getAppointments();
-         
-
-const form = document.getElementById('appointment-form');
-const table = document.getElementById('appointments').querySelector('tbody');
-
-// function to get appointments from server and populate the table
-function getAppointments() {
-  axios.get('https://crudcrud.com/api/bff3d48173bc4eaa998d7dc2ec34a91b/appointments')
-    .then(response => {
-      // clear the table before adding new rows
-      table.innerHTML = '';
-      // iterate through the appointments and add a row for each one
-      response.data.forEach(appointment => {
-        const row = table.insertRow();
-        row.innerHTML = `
-          <td>${appointment.name}</td>
-          <td>${appointment.email}</td>
-          <td>${appointment.phone}</td>
-          <td><button class="delete-button">Delete</button></td>
-        `;
-      });
-      table.querySelectorAll('.delete-button').forEach(button=>{
-        button.addEventListener('click',handleDeleteClick)
-    })
-    
-    })
-    .catch(error => console.error(error));
-}
-
-// call getAppointments on page load
-getAppointments();
-
-// function to handle form submission
-function handleSubmit(event) {
-  event.preventDefault();
-
-  const formData = new FormData(event.target);
-  const appointment = {
-    name: formData.get('name'),
-    email: formData.get('email'),
-    phone: formData.get('phone')
-  };
-
-  // POST the new appointment to the server
-  axios.post('https://crudcrud.com/api/bff3d48173bc4eaa998d7dc2ec34a91b/appointments', appointment)
-    .then(response => {
-      // add a new row to the table for the newly created appointment
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td>${response.data.name}</td>
-        <td>${response.data.email}</td>
-        <td>${response.data.phone}</td>
-        <td><button class="delete-button">Delete</button></td>
-
-      `;
-      // reset the form
-      row.querySelector('.delete-button').addEventListener('click',handleDeleteClick)
-      form.reset();
-    })
-    .catch(error => console.error(error));
-}
-
-// add event listener to the form
-form.addEventListener('submit', handleSubmit);
-function handleDeleteClick(event){
-  event.preventDefault();
-  const row =event.target.closest('tr')
-  const id= row.dataset.id;
-  axios.delete(`https://crudcrud.com/api/bff3d48173bc4eaa998d7dc2ec34a91b/appointments/${id}`)
-  .then(res => {
-    row.remove();
-  })
-  .catch(err => {
-    console.error(err); 
-  })
-}
+fetchCandies()
